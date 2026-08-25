@@ -4,6 +4,7 @@ package app
 import (
 	"context"
 	"path/filepath"
+	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/sujeevanferos/tercode/internal/agent/runtime"
@@ -52,13 +53,31 @@ func New(cfg *config.Config, ws *workspace.Workspace) (*App, error) {
 
 	// Providers
 	providers := registry.NewRegistry()
-	openrouterKey := secrets.Get("OPENROUTER_API_KEY")
+
+	// Helper to resolve API key from config or env
+	getAPIKey := func(providerID string, defaultEnv string) string {
+		if entry, ok := cfg.Provider.Providers[providerID]; ok {
+			if entry.APIKeyEnv != "" {
+				// If the user pasted the actual key in api_key_env, use it directly!
+				if strings.HasPrefix(entry.APIKeyEnv, "sk-") || strings.HasPrefix(entry.APIKeyEnv, "nvapi-") {
+					return entry.APIKeyEnv
+				}
+				// Otherwise resolve as an environment variable name
+				if val := secrets.Get(entry.APIKeyEnv); val != "" {
+					return val
+				}
+			}
+		}
+		return secrets.Get(defaultEnv)
+	}
+
+	openrouterKey := getAPIKey("openrouter", "OPENROUTER_API_KEY")
 	providers.Register(openrouter.New(openrouterKey))
 
-	nvidiaKey := secrets.Get("NVIDIA_API_KEY")
+	nvidiaKey := getAPIKey("nvidia", "NVIDIA_API_KEY")
 	providers.Register(nvidia.New(nvidiaKey, ""))
 
-	openaiKey := secrets.Get("OPENAI_API_KEY")
+	openaiKey := getAPIKey("openai", "OPENAI_API_KEY")
 	providers.Register(openai.New("openai", "OpenAI Compatible", "", openaiKey))
 
 	// Permissions & Tools
