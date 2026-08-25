@@ -3,7 +3,7 @@
 **Tercode** is an open-source, provider-agnostic, local-first agentic development environment for the terminal.
 
 > **Powerful by default. Limitless by configuration.**  
-> *The Neovim/Hyprland philosophy applied to agentic software engineering.*
+> *The infinity customizability philosophy applied to agentic software engineering.*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Go Version](https://img.shields.io/badge/Go-1.22+-00ADD8.svg)](https://go.dev/)
