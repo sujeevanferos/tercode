@@ -764,10 +764,18 @@ Recommended paths:
 └── themes/
 ```
 
-Project-specific configuration may live under:
+Project-specific configuration lives under:
 
 ```text
-.agent/
+.config/
+├── config.yaml
+├── ui.yaml
+├── theme.yaml
+├── keybindings.yaml
+├── themes/
+├── layouts/
+├── commands/
+└── agents/
 ```
 
 ---

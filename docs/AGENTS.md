@@ -1296,32 +1296,52 @@ Do not rewrite stable code simply because a different implementation looks clean
 
 ---
 
-# 49. Git Workflow
+# 49. Git Workflow & Branch Strategy
 
-Keep commits focused.
+### 49.1 Branch Architecture
 
-Prefer:
-
-```text
-feat: add model discovery
-feat: add provider test command
-fix: handle streaming disconnect
-refactor: isolate provider transport
-test: add mock provider failures
-docs: document theme configuration
-```
-
-Avoid giant commits containing unrelated changes.
-
-Do not commit:
+The repository enforces a structured multi-branch model to guarantee safety, stability, and isolation across development stages:
 
 ```text
-API keys
-secrets
-local machine configuration
-generated temporary files
-personal workspace data
+production ◄─── (Stable Releases / Tags)
+    ▲
+    │
+  main     ◄─── (Verified & Integrated Code)
+    ▲
+    │
+   dev     ◄─── (Active Development / Agent Working Branch)
+  ┌─┴─┐
+ feat fix  ◄─── (Short-Lived Topic Branches)
+
+  user     ◄─── (User Experiments & Custom Configurations)
 ```
+
+| Branch | Purpose | Rules for AI Agents |
+| :--- | :--- | :--- |
+| `production` | Production release trunk. | **Protected**. Never commit directly. Only merged from `main` when a stable release or milestone is reached and verified. |
+| `main` | Primary integration trunk. | Contains tested, working features and verified milestone deliverables. Merged from `dev`. |
+| `dev` | Active development branch. | **Default agent workspace**. All daily feature development, phase milestones, and core coding must take place on `dev` (or topic branches off `dev`). |
+| `user` | User workspace & sandbox. | Dedicated for user-defined experiments, local testing, and custom configurations. Never overwrite without explicit user request. |
+| `feat/*`, `fix/*` | Scoped topic branches. | Optional short-lived branches created off `dev` for isolated multi-step tasks. Merged back into `dev`. |
+
+### 49.2 Rules for Engineering Agents
+
+1. **Verify Active Branch**: Always ensure you are on `dev` (or the appropriate feature branch) before writing code or making commits.
+2. **Never Work Directly on `production` or `main`**: Unfinished, untested, or in-progress implementations must remain on `dev`.
+3. **Commit Discipline**: Keep commits focused and atomic with conventional commit messages:
+   ```text
+   feat: add model discovery
+   feat: add provider test command
+   fix: handle streaming disconnect
+   refactor: isolate provider transport
+   test: add mock provider failures
+   docs: document theme configuration
+   ```
+4. **Never Commit Secrets or Artifacts**:
+   - API keys, credentials, or `.env` files.
+   - Machine-specific configuration or build binaries.
+   - SQLite databases or temporary runtime logs.
+5. **Merge Hygiene**: Before proposing or executing a merge to `main`, run all automated tests and verify build correctness.
 
 ---
 

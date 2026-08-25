@@ -1,0 +1,30 @@
+# Tercode Default Project Configuration
+# Place custom project overrides in this file.
+
+log:
+  level: "info"
+  format: "text"
+
+provider:
+  active: "openrouter"
+  model: "anthropic/claude-3.5-sonnet"
+  providers:
+    openrouter:
+      type: "openrouter"
+      api_key_env: "OPENROUTER_API_KEY"
+    nvidia:
+      type: "nvidia"
+      api_key_env: "NVIDIA_API_KEY"
+    ollama:
+      type: "openai"
+      base_url: "http://localhost:11434/v1"
+
+agent:
+  max_iterations: 30
+  timeout_seconds: 300
+  show_tool_output: true
+  auto_approve: false
+
+ui:
+  theme: "default"
+  layout: "default"
