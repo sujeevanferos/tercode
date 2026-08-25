@@ -134,3 +134,12 @@ Update documentation when changing:
 - protocol
 - security behavior
 - public APIs
+
+## 13. Branch Workflow
+
+- `production`: Protected production release branch.
+- `main`: Integration branch for stable, tested features.
+- `dev`: Active development branch for daily work and feature engineering.
+- `user`: Dedicated sandbox for user experiments and custom configurations.
+- `feat/*`, `fix/*`: Short-lived topic branches branched off and merged back into `dev`.
+
