@@ -2,7 +2,6 @@
 package app
 
 import (
-	"context"
 	"path/filepath"
 	"strings"
 
@@ -81,9 +80,7 @@ func New(cfg *config.Config, ws *workspace.Workspace) (*App, error) {
 	providers.Register(openai.New("openai", "OpenAI Compatible", "", openaiKey))
 
 	// Permissions & Tools
-	permMgr := security.NewPermissionManager(nil, func(ctx context.Context, req security.PermissionRequest) (bool, error) {
-		return true, nil // Auto-approve in MVP default
-	})
+	permMgr := newToolPermissions()
 
 	tools := toolreg.New(permMgr, bus)
 	tools.Register(filesystem.NewReadFileTool(ws))
@@ -120,4 +117,14 @@ func (a *App) RunTUI() error {
 	p := tea.NewProgram(model, tea.WithAltScreen())
 	_, err := p.Run()
 	return err
+}
+
+// newToolPermissions allows only read-only filesystem inspection without prompting.
+// All other tools require an approval handler. Until an interactive approval UI
+// is implemented, those requests fail closed rather than executing silently.
+func newToolPermissions() *security.PermissionManager {
+	return security.NewPermissionManager(map[string]security.Policy{
+		"read_file":      security.PolicyAllow,
+		"list_directory": security.PolicyAllow,
+	}, nil)
 }
